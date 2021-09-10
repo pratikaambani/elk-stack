@@ -1,0 +1,210 @@
+=========
+ELK Stack
+=========
+
+
+Chapter 1 - ElasticSearch
+=========================
+
+Elastic: Centralized logging
+Kibana: Data Visualization(logs)
+
+E L K: Free and Open Source
+
+Beats:
+L8W8 way to get data
+Single purpose tools
+
+Filebeat
+Packetbeat
+.
+.
+.
+
+
+Before Beats ==> Logstash was used
+
+Logstash ==> transforms unstructured data to structured data
+
+Beats and Logstash can work together
+
+
+ElasticSearch:
+Holds all of the data itself
+Part of the ELK that holds index of that data for quickly searching
+Can store 1+ index
+
+ElasticSearch clustering:
+Data into 1+ shards
+
+
+Kibana:
+Web interface
+Adhoc searching
+Visualization
+Dashboards
+
+
+
+Extract elasticsearch:
+chmod -R 755 rd.tar
+
+./bin/elasticsearch
+
+curl http://localhost:9200
+Should give default version
+
+
+Extract kibana:
+chmod -R 755 kibana.tar
+
+
+
+Configurations on kibana.yml
+elasticsearch.hosts: es's host
+server.host: 0.0.0.0
+
+now start kibana: ./bin/kibana
+
+navigate to server:
+http://localhost:5601
+
+
+Chapter 2 - Logstash
+====================
+
+Logstash
+logstash file: JAVA_HOME=path/to/java
+
+start logstash
+
+syslog ==> problem, logstash uses for own logging, spare it
+
+kern.log
+kernal messages at boot time
+
+refer to kern.conf in exercise files
+
+
+3 parts
+input: Get data in
+output: put data somewhere
+filter: Where data is transformed
+
+input: stdin
+output: stdout
+
+Logstash Plugins
+> ./logstash-plugins list
+
+100+ plugins by default
+
+
+
+
+input plugins: Beats
+
+
+Fun Ones:
+logstash-input-twitter
+logstash-input-irc
+
+logstash-output-graphite: grafana
+logstash-output-sqs => AWS SQS
+logstash-output-pipe => pipe to stdin of arbitrary process
+
+
+
+Grok
+====
+
+to absorb or understand completely
+to convert unstructured data to structured data
+Regex
+
+Mutate
+to filter data
+grok
+	match
+mutate
+	split
+
+http://grokconstructor.appspot.com?example=2
+
+
+
+
+Anoher example:
+interactive.conf
+remove everything except pattern and uncomment 1 n 2 line
+
+1598405553.742    289 127.0.0.1 TCP_MISS/301 440 GET http://www.linkedin.com/ - HIER_DIRECT/13.107.42.14 -
+1598405565.206    301 127.0.0.1 TCP_TUNNEL/200 95784 CONNECT www.linkedin.com:443 - HIER_DIRECT/13.107.42.14 -
+
+"%{NUMBER:timestamp}\s+%{NUMBER:duration}\s%{IP:client_address}\s%{WORD:cache_result}/%{POSINT:status_code}\s%{NUMBER:bytes}\s%{WORD:request_method}\s%{NOTSPACE:url}\s(%{NOTSPACE:user}|-)\s%{WORD:hierarchy_code}/%{IPORHOST:server}\s%{NOTSPACE:content_type}"}
+
+
+
+start: ./logstash -f interactive.conf
+
+pass 1st line on command prompt
+1598405553.742    289 127.0.0.1 TCP_MISS/301 440 GET http://www.linkedin.com/ - HIER_DIRECT/13.107.42.14 -
+1598405553.742    289 127.0.0.1 TCP_MISS/301 440 GET http://www.linkedin.com/ suerses HIER_DIRECT/13.107.42.14 -
+1598405553.742    289 127.0.0.1 TCP_MISS/301 440 GET http://www.linkedin.com/ - HIER_DIRECT/13.107.42.14 -
+
+
+grok parse failure if something doesn't match
+
+
+============================================================
+
+
+Beats
+=====
+
+Heartbeat: To track uptime of system
+Filebeat: To track log file
+Matricbeat
+Packetbeat
+
+
+
+Logstash has got too much responsibility
+
+Logstash runs on jRuby which uses JVM and JVM reserves 1GB space, which is too much just to ship logs to elasticsearch. 
+Solution ==> Beats
+
+Ship data into es
+
+Written in Go ==> L8W8
+No minimum system requirement, even on raspberry pi
+
+Heartbeat vs Other Beats: 
+others ship logs
+heartbeat monitors the state
+
+
+
+Filebeat:
+fields.yaml
+filebeat.yaml
+filebeat.reference.yaml
+
+
+
+
+By default ES in development mode ==> convert to production mode
+
+1. elasticsearch.yml
+network.host uncomment
+0.0.0.0
+
+2. discovery.type: single-node
+
+Challange =
+Metricbeat
+
+download from es site
+metricbeat.yml ==> output.elasticsearch.hosts: localhost:9200
+
+

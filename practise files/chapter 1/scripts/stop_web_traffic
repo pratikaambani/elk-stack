@@ -1,0 +1,5 @@
+#! /bin/bash
+# Stop simulating web traffic
+
+lxc exec web -- rm -f /etc/cron.d/webtest
+
