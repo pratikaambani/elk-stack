@@ -208,3 +208,22 @@ download from es site
 metricbeat.yml ==> output.elasticsearch.hosts: localhost:9200
 
 
+
+CHapter 3 - Kibana
+==================
+
+KQL
+
+AND
+email:pratikaambani@gmail.com
+age>24
+OR
+{}
+
+
+Kibana visualization
+
+
+Dashboards modification
+
+Custom Dashboards
